@@ -1,6 +1,7 @@
 package br.com.dio.barbershopui.service.query.impl;
 
 import br.com.dio.barbershopui.entity.ClientEntity;
+import br.com.dio.barbershopui.exception.EmailInUseException;
 import br.com.dio.barbershopui.exception.NotFoundException;
 import br.com.dio.barbershopui.exception.PhoneInUseException;
 import br.com.dio.barbershopui.repository.IClientRepository;
@@ -40,26 +41,27 @@ public class ClientQueryService implements IClientQueryService {
     @Override
     public void verifyPhone(final long id, final String phone) {
         var optional = repository.findByPhone(phone);
-        if (optional.isPresent() && !Objects.equals(optional.get().getPhone(), phone)) {
+        if (optional.isPresent() && !Objects.equals(optional.get().getId(), id)) {
             var message = "O telefone " + phone + " já está em uso";
             throw new PhoneInUseException(message);
         }
     }
 
+
     @Override
     public void verifyEmail(final String email) {
         if (repository.existsByEmail(email)) {
             var message = "O e-mail " + email + " já está em uso";
-            throw new PhoneInUseException(message);
+            throw new EmailInUseException(message); //
         }
     }
 
     @Override
     public void verifyEmail(final long id, final String email) {
         var optional = repository.findByEmail(email);
-        if (optional.isPresent() && !Objects.equals(optional.get().getPhone(), email)) {
+        if (optional.isPresent() && !Objects.equals(optional.get().getId(), id)) {
             var message = "O e-mail " + email + " já está em uso";
-            throw new PhoneInUseException(message);
+            throw new EmailInUseException(message);
         }
     }
 }
